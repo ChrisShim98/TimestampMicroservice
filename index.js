@@ -3,6 +3,7 @@
 
 // init project
 var express = require('express');
+const timestamp = require('unix-timestamp');
 var app = express();
 
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
@@ -14,8 +15,8 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+app.get("/api/", function (req, res) {
+  res.json({ 'unix': timestamp.now() * 1000, 'utc': new Date(timestamp.now() * 1000).toUTCString()});
 });
 
 
@@ -23,6 +24,18 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
+
+// request api date with unix key
+app.get("/api/:date", function (req, res) {
+  const numberRegex =  /^\d+$/;
+  const time = new Date(req.params.date).toUTCString();
+  
+  if (time == 'Invalid Date' && numberRegex.test(req.params.date) == false) {res.json({ error : "Invalid Date" })};
+
+  numberRegex.test(req.params.date) == true ? 
+  res.json({ 'unix': parseInt(req.params.date), 'utc': new Date(timestamp.toDate(parseInt(req.params.date / 1000))).toUTCString()}) :
+  res.json({ 'unix': timestamp.fromDate(time) * 1000, 'utc': time});
+}); 
 
 
 
