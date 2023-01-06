@@ -19,10 +19,9 @@ app.get("/api/", function (req, res) {
   res.json({ 'unix': timestamp.now() * 1000, 'utc': new Date(timestamp.now() * 1000).toUTCString()});
 });
 
-
-// your first API endpoint... 
-app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+// http://expressjs.com/en/starter/basic-routing.html
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + '/views/index.html');
 });
 
 // request api date with unix key
